@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Produtos</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h2>Produtos</h2>
+
+    <ul id="produtosLista">
+        <li th:each="produto : ${produtos}">
+            <span th:text="${produto.nome}">Nome do Produto</span> - 
+
+			<span th:text="${#numbers.formatDecimal(produto.preco, 1, 'COMMA', 2, 'POINT')}">Preço</span>
+
+        </li>
+    </ul>
+
+    <button id="carregarMaisBtn">Carregar Mais</button>
+
+    <script>
+        $(document).ready(function() {
+            var inicio = 10; // Inicia a partir do produto 10
+
+            // Função para carregar mais produtos ao clicar no botão
+            $('#carregarMaisBtn').click(function() {
+                $.get('/produtos/adicionar', { inicio: inicio }, function(data) {
+                    // Adiciona os novos produtos ao final da lista
+                    $('#produtosLista').append(data);
+                    inicio += 10; // Atualiza o índice de onde os novos produtos virão
+                });
+            });
+
+            // Carregar mais produtos ao rolar até o final da página
+            $(window).scroll(function() {
+                if ($(window).scrollTop() + $(window).height() == $(document).height()) {
+                    $('#carregarMaisBtn').click(); // Simula o clique no botão ao atingir o final
+                }
+            });
+        });
+    </script>
+</body>
+</html>

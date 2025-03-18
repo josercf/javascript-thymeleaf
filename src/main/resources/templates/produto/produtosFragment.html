@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <body>
+    <!-- Definindo o fragmento que renderiza apenas os itens de produto -->
+    <div th:fragment="produtosFragment">
+      <li th:each="produto : ${produtos}">
+         <span th:text="${produto.nome}">Nome do Produto</span> - 
+         <span th:text="${#numbers.formatDecimal(produto.preco, 1, 'COMMA', 2, 'POINT')}">Preço</span>
+      </li>
+    </div>
+  </body>
+</html>

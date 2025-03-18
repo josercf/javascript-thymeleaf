@@ -1,57 +1,42 @@
 package com.javascript_thymeleaf.controllers;
 
-import javax.validation.Valid;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.javascript_thymeleaf.models.Produto;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 public class ProdutoController {
 
-	private Produto produto = new Produto("Produto Exemplo", "Descrição do Produto Exemplo", 100.0);
-
-	@GetMapping("/produto")
-	public String exibirProduto(Model model) {
-
-		// Adicionando o objeto produto ao modelo
-		model.addAttribute("produto", produto);
-
-		// Retornando o nome do template Thymeleaf
-		return "produto/index"; // O arquivo HTML será produto.html
-	}
-	
-    // Endpoint para atualizar o preço do produto via AJAX
-    @GetMapping("/atualizarPreco")
-    @ResponseBody
-    public Produto atualizarPreco() {
-        // Lógica para alterar o preço (exemplo, adicionando 10% ao preço atual)
-        produto.setPreco(produto.getPreco() * 1.10);
-
-        // Retorna o produto com o novo preço no formato JSON
-        return produto;
+    // Método para exibir a página inicial com os produtos
+    @GetMapping("/produtos")
+    public String listarProdutos(Model model) {
+        // Simulando uma lista de produtos
+        List<Produto> produtos = gerarProdutos(0, 10); // Carregar os primeiros 10 produtos
+        model.addAttribute("produtos", produtos);
+        return "produto/listar"; // Nome do template Thymeleaf
     }
-    
-    @PostMapping("produto/salvar")
-    public String salvarProduto(@Valid @ModelAttribute Produto produto, BindingResult bindingResult, Model model) {
-    
-        System.out.println(produto.getNome());
-        
-        // Lógica para salvar o produto, pode ser um banco de dados ou outro processamento
-        
-        model.addAttribute("mensagemSucesso", "Produto salvo com sucesso!");
-        return "redirect:/produto-sucesso";// Pode redirecionar ou exibir uma mensagem de sucesso
+
+    // Método para carregar mais produtos (AJAX)
+    @GetMapping("/produtos/adicionar")
+    public String carregarMaisProdutos(@RequestParam int inicio, Model model) {
+        List<Produto> produtos = gerarProdutos(inicio, 10);
+        model.addAttribute("produtos", produtos);
+        return "produto/produtosFragment :: produtosFragment";
     }
-    
-    @GetMapping("/produto-sucesso")
-    public String exibirPaginaSucesso() {
-        // Retorna o template de sucesso
-        return "/produto/produto-sucesso"; // Nome do template Thymeleaf para a página de sucesso
+
+
+    // Método para gerar produtos simulados
+    private List<Produto> gerarProdutos(int inicio, int quantidade) {
+        List<Produto> produtos = new ArrayList<>();
+        for (int i = inicio; i < inicio + quantidade; i++) {
+            produtos.add(new Produto((long) i, "Produto " + (i + 1), Math.random() * 100));
+        }
+        return produtos;
     }
 }
